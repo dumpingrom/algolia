@@ -13,7 +13,8 @@ export class AlgoliaService {
     aroundLatLngViaIP: true,
     getRankingInfo: 1,
     hitsPerPage: 3,
-    facets: [ 'food_type' ]
+    disjunctiveFacets: [ 'food_type' ],
+    maxValuesPerFacet: 5
   });
 
   latitude: any;
@@ -46,6 +47,6 @@ export class AlgoliaService {
   }
 
   toggleFacet(facet, value) {
-    this.helper.toggleFacetRefinement(facet, value);
+    this.helper.toggleFacetRefinement(facet, value).search();
   }
 }

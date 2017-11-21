@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 * {
   box-sizing: border-box;
+  font-size: 13px;
 }
 
 body {
@@ -37,13 +38,17 @@ label {
 }
 
 input[type=checkbox] {
-  
+  visibility: hidden;
   position: absolute;
 }
 
-input[type=checkbox]:checked + label {
+label.refined {
   background-color: #1C688E;
   color: white;
+}
+
+.clickable {
+  cursor: pointer;
 }
 
 .facet-data-name {
@@ -75,10 +80,22 @@ input[type=checkbox]:checked + label {
   border: none;
 }
 
+.refinementlist-filter-toggle {
+  float: left;
+  position: absolute;
+  text-decoration: underline;
+  color: #737373;
+}
+
 .app-refinementlist-container {
   float: left;
-  width: 30%;
+  width: 40%;
   padding: 10px;
+}
+
+.app-results-container {
+  padding-top: 20px;
+  background: #fff;
 }
 
 @media screen and (max-width: 768px) {
@@ -92,5 +109,11 @@ input[type=checkbox]:checked + label {
 
   .app-refinementlist-container.active {
     display: block;
+  }
+}
+
+@media screen and (min-width:769px) {
+  .refinementlist-filter-toggle {
+    display: none;
   }
 }

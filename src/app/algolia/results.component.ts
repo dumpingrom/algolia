@@ -6,12 +6,14 @@ import { AlgoliaService } from './algolia.service';
 @Component({
   selector: 'app-results',
   template: `
-    <div class="results-nbHits">
-      <strong>{{ results.nbHits }} results found</strong> in {{ results.processingTimeMS * 0.001 }} seconds
+    <div class="app-results-container">
+      <div class="results-nbHits">
+        <strong>{{ results.nbHits }} results found</strong> in {{ results.processingTimeMS * 0.001 }} seconds
+      </div>
+      <ul>
+        <li *ngFor="let hit of results.hits" [innerHTML]="hit._highlightResult.name.value"></li>
+      </ul>
     </div>
-    <ul class="results-container">
-      <li *ngFor="let hit of results.hits" [innerHTML]="hit._highlightResult.name.value"></li>
-    </ul>
   `
 })
 export class ResultsComponent {

@@ -6,15 +6,15 @@ import { AlgoliaService } from './algolia.service';
 @Component({
   selector: 'app-refinementlist',
   template: `
-    <span class="refinementlist-filter-toggle" (click)="toggleList(!isActive)">Show/Hide Filters</span>
+    <span class="clickable refinementlist-filter-toggle" (click)="toggleList(!isActive)">Show/Hide Filters</span>
     <div [class]="'app-refinementlist-container' + (isActive ? ' active' : ' inactive')">
-      <div *ngFor="let facet of results.facets">
+      <div *ngFor="let facet of results.disjunctiveFacets">
         <h3>{{ facet.name }}</h3>
         <ul>
           <li *ngFor="let data of results.getFacetValues(facet.name)">
             <input type="checkbox" [id]="'data-'+data.name"
               (change)="onCheckboxChange(facet.name, data.name)">
-            <label for="data-{{data.name}}">
+            <label for="data-{{data.name}}" [class]="data.isRefined ? 'refined' : ''">
               <span class="facet-data-name">{{data.name}}</span>
               <span class="facet-data-count">{{ data.count }}</span>
             </label>

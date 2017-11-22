@@ -25,6 +25,26 @@ ul {
 li {
   list-style-type: none;
 }
+h2 {
+  margin:0;
+}
+
+button {
+  -ms-appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  border-radius: 3px;
+  border: 1px solid #ddd;
+  padding: 7px 40px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #eee;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #ddd;
+}
 
 label {
   padding: 2px 10px;
@@ -42,9 +62,17 @@ input[type=checkbox] {
   position: absolute;
 }
 
-label.refined {
+label.refined, label:hover {
   background-color: #1C688E;
   color: white;
+}
+
+.yellow {
+  color: #fcb09a;
+}
+
+.grey {
+  color: #ccc;
 }
 
 .clickable {
@@ -60,6 +88,14 @@ label.refined {
   width: 80%;
   margin: auto;
   margin-top: 80px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  -webkit-box-shadow: 0px 13px 18px -6px rgba(133,133,133,1);
+  -moz-box-shadow: 0px 13px 18px -6px rgba(133,133,133,1);
+  box-shadow: 0px 13px 18px -6px rgba(133,133,133,1);
+  margin-bottom: 80px;
 }
 
 .searchbox-container {
@@ -68,6 +104,7 @@ label.refined {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 2;
 }
 
 .searchbox-container input {
@@ -81,21 +118,24 @@ label.refined {
 }
 
 .refinementlist-filter-toggle {
-  float: left;
-  position: absolute;
   text-decoration: underline;
-  color: #737373;
+  color: #aaa;
 }
 
-.app-refinementlist-container {
-  float: left;
-  width: 40%;
+app-refinementlist {
+  width: 30%;
+  flex-basis: 30%;
   padding: 10px;
+  background-color: #fff;
+  border-right: 1px solid #dadada;
 }
 
-.app-results-container {
-  padding-top: 20px;
+app-results {
+  padding: 20px;
+  width: 70%;
+  flex-basis: 70%;
   background: #fff;
+  flex-grow: 1;
 }
 
 @media screen and (max-width: 768px) {
@@ -103,11 +143,11 @@ label.refined {
     width: 100%;
   }
 
-  .app-refinementlist-container.inactive {
+  app-refinementlist.inactive {
     display: none;
   }
 
-  .app-refinementlist-container.active {
+  app-refinementlist.active {
     display: block;
   }
 }

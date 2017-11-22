@@ -13,26 +13,18 @@ export class AlgoliaService {
     aroundLatLngViaIP: true,
     getRankingInfo: 1,
     hitsPerPage: 3,
-    disjunctiveFacets: [ 'food_type' ],
+    disjunctiveFacets: [ 'food_type', 'stars_count', 'payments_options', 'city', 'price_range' ],
     maxValuesPerFacet: 5
   });
 
-  latitude: any;
-  longitude: any;
-  useGeolocation = false;
-
   hits;
   facets;
+  hitsPerPage = 3;
   emitter = new Subject<any>();
 
   constructor(private http: Http) {
-    navigator.geolocation.getCurrentPosition((pos: Position) => {
-      this.latitude = pos.coords.latitude;
-      this.longitude = pos.coords.longitude;
-      this.useGeolocation = true;
-    });
-
-    this.helper.on('result', (results) => {
+    this.helper.on('result', (results) => { 
+      console.log(results);
       this.hits = results.hits;
       this.facets = results.facets;
       this.emitter.next(results);
@@ -43,10 +35,15 @@ export class AlgoliaService {
   }
 
   search(query) {
-    this.helper.setQuery(query).search(query);
+    this.helper.setQuery(query).search();
   }
 
   toggleFacet(facet, value) {
     this.helper.toggleFacetRefinement(facet, value).search();
+  }
+
+  loadMore() {
+    this.hitsPerPage += 3;
+    this.helper.setQueryParameter('hitsPerPage', this.hitsPerPage).search();
   }
 }

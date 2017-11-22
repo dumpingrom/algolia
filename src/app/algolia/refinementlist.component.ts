@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 
 import { AlgoliaService } from './algolia.service';
@@ -6,15 +6,14 @@ import { AlgoliaService } from './algolia.service';
 @Component({
   selector: 'app-refinementlist',
   template: `
-    <span class="clickable refinementlist-filter-toggle" (click)="toggleList(!isActive)">Show/Hide Filters</span>
     <div [class]="'app-refinementlist-container' + (isActive ? ' active' : ' inactive')">
       <div *ngFor="let facet of results.disjunctiveFacets">
-        <h3>{{ facet.name }}</h3>
+        <h3>{{ prettyNames[facet.name] }}</h3>
         <ul>
           <li *ngFor="let data of results.getFacetValues(facet.name)">
             <input type="checkbox" [id]="'data-'+data.name"
               (change)="onCheckboxChange(facet.name, data.name)">
-            <label for="data-{{data.name}}" [class]="data.isRefined ? 'refined' : ''">
+            <label for="data-{{data.name}}" [class]="'clickable ' + (data.isRefined ? 'refined' : '')">
               <span class="facet-data-name">{{data.name}}</span>
               <span class="facet-data-count">{{ data.count }}</span>
             </label>
@@ -25,9 +24,16 @@ import { AlgoliaService } from './algolia.service';
   `
 })
 export class RefinementlistComponent {
-  isActive = false;
-  results = [];
+  @Input() isActive;
 
+  results = [];
+  prettyNames = {
+    'food_type': 'Cuisine/Food Type',
+    'stars_count': 'Rating',
+    'payment_options': 'Payment Options',
+    'city': 'City',
+    'price_range': 'Price Range'
+  }
   subs = new Array<Subscription>();
 
   constructor(public algolia: AlgoliaService) {
@@ -35,10 +41,6 @@ export class RefinementlistComponent {
       (results) => { this.results = results; },
       (error) => { console.error(error); }
     );
-  }
-
-  toggleList() {
-    this.isActive = !this.isActive;
   }
 
   onCheckboxChange(facet, value) {

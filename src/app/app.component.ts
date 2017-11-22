@@ -8,10 +8,16 @@ import { AlgoliaService } from './algolia/algolia.service';
 })
 export class AppComponent {
   title = 'Algolia Restaurants Search';
+  isRefinementListActive = false;
 
   constructor(public algolia: AlgoliaService) { }
 
   onQueryChange(value: string) {
     this.algolia.search(value);
+  }
+
+  onToggleRefinementList() {
+    this.isRefinementListActive = !this.isRefinementListActive;
+    console.log(this.isRefinementListActive);
   }
 }

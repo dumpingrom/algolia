@@ -10,10 +10,9 @@ import * as algoliasearchHelper from 'algoliasearch-helper';
 export class AlgoliaService {
   client = algoliasearch('7FFYGHIS99', 'a60ba1f30c77303d329b6522221f336a');
   helper = algoliasearchHelper(this.client, 'restaurants', {
-    aroundLatLngViaIP: true,
     getRankingInfo: 1,
     hitsPerPage: 3,
-    disjunctiveFacets: [ 'food_type', 'stars_count', 'payments_options', 'city', 'price_range' ],
+    disjunctiveFacets: [ 'food_type', 'stars_count', 'payment_options', 'city', 'price_range' ],
     maxValuesPerFacet: 5
   });
 
@@ -23,19 +22,28 @@ export class AlgoliaService {
   emitter = new Subject<any>();
 
   constructor(private http: Http) {
+    navigator.geolocation.getCurrentPosition(
+      (position: Position) => {
+        this.helper.setQueryParameter('aroundLatLng', `${position.coords.latitude}, ${position.coords.longitude}`).search();
+      },
+      () => {
+        this.helper.setQueryParameter('aroundLatLngViaIP', true);
+      }
+    )
+
     this.helper.on('result', (results) => { 
-      console.log(results);
       this.hits = results.hits;
       this.facets = results.facets;
       this.emitter.next(results);
     });
 
     // make first search with no query (fetches all results)
-    this.search('');
+    this.helper.search();
   }
 
   search(query) {
-    this.helper.setQuery(query).search();
+    this.hitsPerPage = 3;
+    this.helper.setQuery(query).setQueryParameter('hitsPerPage', this.hitsPerPage).search();
   }
 
   toggleFacet(facet, value) {

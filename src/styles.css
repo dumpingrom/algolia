@@ -79,6 +79,10 @@ label.refined, label:hover {
   cursor: pointer;
 }
 
+#map { height: 600px; width: 600px; }
+#map.visible { position: relative; }
+#map.hidden { position: absolute; left: -200vw }
+
 .facet-data-name {
   flex-basis: 70%;
   width: 70%;
@@ -86,25 +90,26 @@ label.refined, label:hover {
 
 .app-main-container {
   width: 80%;
-  margin: auto;
-  margin-top: 80px;
+  margin: 80px auto;
+  -webkit-box-shadow: 0px 13px 18px -6px rgba(133,133,133,1);
+  -moz-box-shadow: 0px 13px 18px -6px rgba(133,133,133,1);
+  box-shadow: 0px 13px 18px -6px rgba(133,133,133,1);
+  height: calc(100vh - 160px);
+}
+
+.app-content {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: center;
-  -webkit-box-shadow: 0px 13px 18px -6px rgba(133,133,133,1);
-  -moz-box-shadow: 0px 13px 18px -6px rgba(133,133,133,1);
-  box-shadow: 0px 13px 18px -6px rgba(133,133,133,1);
-  margin-bottom: 80px;
+  height: calc(100vh - 80px - 160px);
 }
 
 .searchbox-container {
   background-color: #1C688E;
   padding: 20px;
-  position: fixed;
-  top: 0;
-  left: 0;
   z-index: 2;
+  border-radius: 6px 6px 0 0;  
 }
 
 .searchbox-container input {
@@ -128,6 +133,7 @@ app-refinementlist {
   padding: 10px;
   background-color: #fff;
   border-right: 1px solid #dadada;
+  overflow: auto;
 }
 
 app-results {
@@ -136,11 +142,19 @@ app-results {
   flex-basis: 70%;
   background: #fff;
   flex-grow: 1;
+  overflow: auto;
 }
+
+.mobile-closemap { display: none; }
 
 @media screen and (max-width: 768px) {
   .app-main-container {
     width: 100%;
+    margin: 0;
+  }
+
+  .searchbox-container {
+    border-radius: 0;
   }
 
   app-refinementlist.inactive {
@@ -149,6 +163,22 @@ app-results {
 
   app-refinementlist.active {
     display: block;
+  }
+
+  .app-content, app-refinementlist, app-results {
+    height: auto;
+  }
+
+  #map.visible { height: 100vh; width: 100vw; position: fixed !important; top: 0; left: 0; z-index: 2 }
+  #map.visible + .mobile-closemap { 
+    display: inline-block; 
+    position: fixed; 
+    top: 40px; 
+    right: 20px; 
+    z-index: 3;
+    padding: 5px;
+    border-radius: 10px;
+    background: white; 
   }
 }
 

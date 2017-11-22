@@ -12,7 +12,8 @@ import {
   SearchboxComponent,
   RefinementlistComponent,
   ResultsComponent,
-  RatingComponent
+  RatingComponent,
+  MapComponent
 } from './algolia';
 import { Http } from '@angular/http/src/http';
 
@@ -22,7 +23,8 @@ import { Http } from '@angular/http/src/http';
     SearchboxComponent,
     RefinementlistComponent,
     ResultsComponent,
-    RatingComponent
+    RatingComponent,
+    MapComponent
   ],
   imports: [
     BrowserModule,

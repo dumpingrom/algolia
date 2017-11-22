@@ -1,12 +1,12 @@
-declare const algoliasearch: any;
-
 import { Http } from '@angular/http';
+
+import * as algoliasearch from 'algoliasearch';
 
 class RecordsUpdater {
   constructor(private http: Http) { }
 
   updateRestaurantsObjects() {
-    const client = algoliasearch('7FFYGHIS99', '61a308278a533cf9ffd4b554d5c5944d', { protocol: 'https:' });
+    const client = algoliasearch('7FFYGHIS99', 'a60ba1f30c77303d329b6522221f336a', { protocol: 'https:' });
     const index = client.initIndex('restaurants');
 
     this.http.get('/assets/restaurants_info.csv').subscribe(

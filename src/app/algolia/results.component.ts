@@ -7,6 +7,7 @@ import { AlgoliaService } from './algolia.service';
   selector: 'app-results',
   template: `
     <span class="clickable refinementlist-filter-toggle" (click)="toggleList()">Show/Hide Filters</span>
+    <app-map></app-map>
     <div class="app-results-container">
       <div class="results-nbHits">
         <span><strong>{{ results.nbHits }} results found</strong> in {{ results.processingTimeMS * 0.001 }} seconds</span>

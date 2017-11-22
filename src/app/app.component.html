@@ -1,6 +1,7 @@
-<app-searchbox debounceTime="500" (emitter)="onQueryChange($event)"></app-searchbox>
-
 <div class="app-main-container">
-  <app-refinementlist [isActive]="isRefinementListActive" [class]="isRefinementListActive ? 'active' : 'inactive'"></app-refinementlist>
-  <app-results (onToggleRefinementList)="isRefinementListActive = !isRefinementListActive"></app-results>
+  <app-searchbox debounceTime="500" (emitter)="onQueryChange($event)"></app-searchbox>
+  <div class="app-content">
+    <app-refinementlist [isActive]="isRefinementListActive" [class]="isRefinementListActive ? 'active' : 'inactive'"></app-refinementlist>
+    <app-results (onToggleRefinementList)="isRefinementListActive = !isRefinementListActive"></app-results>
+  </div>
 </div>

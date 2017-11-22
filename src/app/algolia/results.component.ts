@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 
 import { AlgoliaService } from './algolia.service';
@@ -7,7 +7,7 @@ import { AlgoliaService } from './algolia.service';
   selector: 'app-results',
   template: `
     <span class="clickable refinementlist-filter-toggle" (click)="toggleList()">Show/Hide Filters</span>
-    <div class="app-results-container">
+    <div class="app-results-container" *ngIf="results.length">
       <div class="results-nbHits">
         <span><strong>{{ results.nbHits }} results found</strong> in {{ results.processingTimeMS * 0.001 }} seconds</span>
         <div class="separator"></div>
@@ -65,17 +65,19 @@ import { AlgoliaService } from './algolia.service';
     `
   ]
 })
-export class ResultsComponent {
+export class ResultsComponent implements OnInit, OnDestroy {
   @Output() onToggleRefinementList = new EventEmitter<any>();
 
   subs = new Array<Subscription>();
   results = [];
 
-  constructor(public algolia: AlgoliaService) {
-    algolia.emitter.subscribe(
+  constructor(public algolia: AlgoliaService) {}
+
+  ngOnInit() {
+    this.subs.push(this.algolia.emitter.subscribe(
       (results) => { this.results = results; },
       (error) => { console.error(error); }
-    );
+    ));
   }
 
   toggleList() {
@@ -84,5 +86,11 @@ export class ResultsComponent {
 
   loadMore() {
     this.algolia.loadMore();
+  }
+
+  ngOnDestroy() {
+    for (let sub of this.subs) {
+      sub.unsubscribe();
+    } 
   }
 }

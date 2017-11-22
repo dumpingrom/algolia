@@ -17,7 +17,7 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## Data manipulation / import script
 
-The import script for the second dataset can be found at `/src/app/algolia/updaterecords.ts`. I simply triggered it with a button (which I removed from the source code). In real life, I could (and should, and would) have triggered the script from a server with a secure layer, as the admin API key is not supposed to be in client source.
+The import script for the second dataset can be found at [`/src/app/algolia/updaterecords.ts`](https://github.com/rombevillard/algolia/blob/master/src/app/algolia/updaterecords.ts). I simply triggered it with a button (which I removed from the source code). In real life, I could (and should, and would) have triggered the script from a server with a secure layer, as the admin API key is not supposed to be in client source.
 
 ## Thank you
 This has been a real challenge for me, and I learned some good things while completing this assignment. Whatever happens I'm glad I had the opportunity to work on this little project. I hope you'll like it. 

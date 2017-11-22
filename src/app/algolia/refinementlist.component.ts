@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 
 import { AlgoliaService } from './algolia.service';
@@ -6,7 +6,7 @@ import { AlgoliaService } from './algolia.service';
 @Component({
   selector: 'app-refinementlist',
   template: `
-    <div [class]="'app-refinementlist-container' + (isActive ? ' active' : ' inactive')">
+    <div [class]="'app-refinementlist-container' + (isActive ? ' active' : ' inactive')" *ngIf="results.length">
       <div *ngFor="let facet of results.disjunctiveFacets">
         <h3>{{ prettyNames[facet.name] }}</h3>
         <ul>
@@ -23,7 +23,7 @@ import { AlgoliaService } from './algolia.service';
     </div>
   `
 })
-export class RefinementlistComponent {
+export class RefinementlistComponent implements OnInit, OnDestroy {
   @Input() isActive;
 
   results = [];
@@ -36,14 +36,22 @@ export class RefinementlistComponent {
   }
   subs = new Array<Subscription>();
 
-  constructor(public algolia: AlgoliaService) {
-    this.algolia.emitter.subscribe(
+  constructor(public algolia: AlgoliaService) {}
+
+  ngOnInit() {
+    this.subs.push(this.algolia.emitter.subscribe(
       (results) => { this.results = results; },
       (error) => { console.error(error); }
-    );
+    ));
   }
-
+  
   onCheckboxChange(facet, value) {
     this.algolia.toggleFacet(facet, value);
+  }
+
+  ngOnDestroy() {
+    for (let sub of this.subs) {
+      sub.unsubscribe();
+    }
   }
 }

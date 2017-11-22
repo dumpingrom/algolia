@@ -49,25 +49,29 @@ var AlgoliaService = (function () {
         this.http = http;
         this.client = __WEBPACK_IMPORTED_MODULE_3_algoliasearch__('7FFYGHIS99', 'a60ba1f30c77303d329b6522221f336a');
         this.helper = __WEBPACK_IMPORTED_MODULE_4_algoliasearch_helper__(this.client, 'restaurants', {
-            aroundLatLngViaIP: true,
             getRankingInfo: 1,
             hitsPerPage: 3,
-            disjunctiveFacets: ['food_type', 'stars_count', 'payments_options', 'city', 'price_range'],
+            disjunctiveFacets: ['food_type', 'stars_count', 'payment_options', 'city', 'price_range'],
             maxValuesPerFacet: 5
         });
         this.hitsPerPage = 3;
         this.emitter = new __WEBPACK_IMPORTED_MODULE_2_rxjs_Subject__["a" /* Subject */]();
+        navigator.geolocation.getCurrentPosition(function (position) {
+            _this.helper.setQueryParameter('aroundLatLng', position.coords.latitude + ", " + position.coords.longitude).search();
+        }, function () {
+            _this.helper.setQueryParameter('aroundLatLngViaIP', true);
+        });
         this.helper.on('result', function (results) {
-            console.log(results);
             _this.hits = results.hits;
             _this.facets = results.facets;
             _this.emitter.next(results);
         });
         // make first search with no query (fetches all results)
-        this.search('');
+        this.helper.search();
     }
     AlgoliaService.prototype.search = function (query) {
-        this.helper.setQuery(query).search();
+        this.hitsPerPage = 3;
+        this.helper.setQuery(query).setQueryParameter('hitsPerPage', this.hitsPerPage).search();
     };
     AlgoliaService.prototype.toggleFacet = function (facet, value) {
         this.helper.toggleFacetRefinement(facet, value).search();
@@ -94,17 +98,114 @@ var AlgoliaService = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__algolia_service__ = __webpack_require__("../../../../../src/app/algolia/algolia.service.ts");
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__algolia_service__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__searchbox_component__ = __webpack_require__("../../../../../src/app/algolia/searchbox.component.ts");
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_1__searchbox_component__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_1__searchbox_component__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__refinementlist_component__ = __webpack_require__("../../../../../src/app/algolia/refinementlist.component.ts");
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_2__refinementlist_component__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_2__refinementlist_component__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__results_component__ = __webpack_require__("../../../../../src/app/algolia/results.component.ts");
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_3__results_component__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_3__results_component__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__rating_component__ = __webpack_require__("../../../../../src/app/algolia/rating.component.ts");
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_4__rating_component__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_4__rating_component__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__map_component__ = __webpack_require__("../../../../../src/app/algolia/map.component.ts");
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_5__map_component__["a"]; });
 
 
 
 
+
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/algolia/map.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MapComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__algolia_service__ = __webpack_require__("../../../../../src/app/algolia/algolia.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+var MapComponent = (function () {
+    function MapComponent(algolia) {
+        this.algolia = algolia;
+        this.markers = [];
+        this.results = [];
+        this.isMapVisible = false;
+        this.subs = new Array();
+    }
+    MapComponent.prototype.ngAfterViewInit = function () {
+        var _this = this;
+        this.map = new google.maps.Map(this.mapContainer.nativeElement, { zoom: 1, center: new google.maps.LatLng(0, 0) });
+        this.subs.push(this.algolia.emitter.subscribe(function (results) {
+            console.log(results);
+            _this.results = results;
+            _this.updateMarkers();
+        }, function (error) { console.error(error); }));
+    };
+    MapComponent.prototype.ngOnDestroy = function () {
+        for (var _i = 0, _a = this.subs; _i < _a.length; _i++) {
+            var sub = _a[_i];
+            sub.unsubscribe();
+        }
+    };
+    MapComponent.prototype.updateMarkers = function () {
+        var _this = this;
+        for (var _i = 0, _a = this.markers; _i < _a.length; _i++) {
+            var marker = _a[_i];
+            marker.setMap(null);
+        }
+        var _loop_1 = function (hit) {
+            var marker = new google.maps.Marker({
+                position: { lat: hit._geoloc.lat, lng: hit._geoloc.lng },
+                map: this_1.map,
+                title: hit.name
+            });
+            var infowindow = new google.maps.InfoWindow({
+                content: hit.name
+            });
+            marker.addListener('click', function () {
+                infowindow.open(_this.map, marker);
+            });
+            this_1.markers.push(marker);
+        };
+        var this_1 = this;
+        for (var _b = 0, _c = this.results['hits']; _b < _c.length; _b++) {
+            var hit = _c[_b];
+            _loop_1(hit);
+        }
+        var bounds = new google.maps.LatLngBounds();
+        for (var _d = 0, _e = this.markers; _d < _e.length; _d++) {
+            var marker = _e[_d];
+            bounds.extend(marker.getPosition());
+        }
+        this.map.fitBounds(bounds);
+    };
+    MapComponent.prototype.toggleMap = function () {
+        this.isMapVisible = !this.isMapVisible;
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_3" /* ViewChild */])('map'),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */])
+    ], MapComponent.prototype, "mapContainer", void 0);
+    MapComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'app-map',
+            template: "\n    <div class=\"app-map-container\">\n      <span class=\"grey clickable\" (click)=\"toggleMap()\">\u2316 Show results on a map</span>\n      <div id=\"map\" #map [class]=\"isMapVisible ? 'visible' : 'hidden'\"></div>\n      <span class=\"mobile-closemap\" (click)=\"toggleMap()\">\u2A2F Close map</span>\n    </div>\n  "
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__algolia_service__["a" /* AlgoliaService */]])
+    ], MapComponent);
+    return MapComponent;
+}());
 
 
 
@@ -267,7 +368,7 @@ var ResultsComponent = (function () {
     ResultsComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'app-results',
-            template: "\n    <span class=\"clickable refinementlist-filter-toggle\" (click)=\"toggleList()\">Show/Hide Filters</span>\n    <div class=\"app-results-container\">\n      <div class=\"results-nbHits\">\n        <span><strong>{{ results.nbHits }} results found</strong> in {{ results.processingTimeMS * 0.001 }} seconds</span>\n        <div class=\"separator\"></div>\n      </div>\n      <div *ngFor=\"let hit of results.hits\" class=\"result\">\n        <div class=\"result-image\">\n          <img [src]=\"hit.image_url\" width=\"100\" height=\"100\">\n        </div>\n        <div class=\"result-info\">\n          <h2 [innerHTML]=\"hit._highlightResult.name.value\"></h2>\n          <span class=\"yellow\">{{ hit.stars_count }}</span>\n          <app-rating [score]=\"hit.stars_count\"></app-rating>\n          <span class=\"grey\">({{ hit.reviews_count }} reviews)</span><br>\n          <span class=\"grey\">\n            {{ hit._highlightResult.food_type.value }} | {{ hit.neighborhood }} | {{ hit.price_range }}\n          </span>\n        </div>\n      </div>\n      <div class=\"app-pager-container\">\n        <button (click)=\"loadMore()\">Show More</button>\n      </div>\n    </div>\n  ",
+            template: "\n    <span class=\"clickable refinementlist-filter-toggle\" (click)=\"toggleList()\">Show/Hide Filters</span>\n    <app-map></app-map>\n    <div class=\"app-results-container\">\n      <div class=\"results-nbHits\">\n        <span><strong>{{ results.nbHits }} results found</strong> in {{ results.processingTimeMS * 0.001 }} seconds</span>\n        <div class=\"separator\"></div>\n      </div>\n      <div *ngFor=\"let hit of results.hits\" class=\"result\">\n        <div class=\"result-image\">\n          <img [src]=\"hit.image_url\" width=\"100\" height=\"100\">\n        </div>\n        <div class=\"result-info\">\n          <h2 [innerHTML]=\"hit._highlightResult.name.value\"></h2>\n          <span class=\"yellow\">{{ hit.stars_count }}</span>\n          <app-rating [score]=\"hit.stars_count\"></app-rating>\n          <span class=\"grey\">({{ hit.reviews_count }} reviews)</span><br>\n          <span class=\"grey\">\n            {{ hit._highlightResult.food_type.value }} | {{ hit.neighborhood }} | {{ hit.price_range }}\n          </span>\n        </div>\n      </div>\n      <div class=\"app-pager-container\">\n        <button (click)=\"loadMore()\">Show More</button>\n      </div>\n    </div>\n  ",
             styles: [
                 ".result {\n      display: flex;\n      flex-direction: row;\n      flex-wrap: nowrap;\n      align-items: flex-start;\n      justify-content: flex-start;\n    }\n    ",
                 ".result .result-image, .result .result-info {\n      padding: 10px;\n    }\n    ",
@@ -371,7 +472,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<app-searchbox debounceTime=\"500\" (emitter)=\"onQueryChange($event)\"></app-searchbox>\r\n\r\n<div class=\"app-main-container\">\r\n  <app-refinementlist [isActive]=\"isRefinementListActive\" [class]=\"isRefinementListActive ? 'active' : 'inactive'\"></app-refinementlist>\r\n  <app-results (onToggleRefinementList)=\"isRefinementListActive = !isRefinementListActive\"></app-results>\r\n</div>"
+module.exports = "<div class=\"app-main-container\">\n  <app-searchbox debounceTime=\"500\" (emitter)=\"onQueryChange($event)\"></app-searchbox>\n  <div class=\"app-content\">\n    <app-refinementlist [isActive]=\"isRefinementListActive\" [class]=\"isRefinementListActive ? 'active' : 'inactive'\"></app-refinementlist>\n    <app-results (onToggleRefinementList)=\"isRefinementListActive = !isRefinementListActive\"></app-results>\n  </div>\n</div>"
 
 /***/ }),
 
@@ -453,10 +554,11 @@ var AppModule = (function () {
         Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["E" /* NgModule */])({
             declarations: [
                 __WEBPACK_IMPORTED_MODULE_5__app_component__["a" /* AppComponent */],
-                __WEBPACK_IMPORTED_MODULE_6__algolia__["e" /* SearchboxComponent */],
-                __WEBPACK_IMPORTED_MODULE_6__algolia__["c" /* RefinementlistComponent */],
-                __WEBPACK_IMPORTED_MODULE_6__algolia__["d" /* ResultsComponent */],
-                __WEBPACK_IMPORTED_MODULE_6__algolia__["b" /* RatingComponent */]
+                __WEBPACK_IMPORTED_MODULE_6__algolia__["f" /* SearchboxComponent */],
+                __WEBPACK_IMPORTED_MODULE_6__algolia__["d" /* RefinementlistComponent */],
+                __WEBPACK_IMPORTED_MODULE_6__algolia__["e" /* ResultsComponent */],
+                __WEBPACK_IMPORTED_MODULE_6__algolia__["c" /* RatingComponent */],
+                __WEBPACK_IMPORTED_MODULE_6__algolia__["b" /* MapComponent */]
             ],
             imports: [
                 __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
@@ -505,7 +607,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 if (__WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment */].production) {
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_7" /* enableProdMode */])();
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_8" /* enableProdMode */])();
 }
 Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_2__app_app_module__["a" /* AppModule */])
     .catch(function (err) { return console.log(err); });

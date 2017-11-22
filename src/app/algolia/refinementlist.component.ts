@@ -6,7 +6,7 @@ import { AlgoliaService } from './algolia.service';
 @Component({
   selector: 'app-refinementlist',
   template: `
-    <div [class]="'app-refinementlist-container' + (isActive ? ' active' : ' inactive')" *ngIf="results.length">
+    <div [class]="'app-refinementlist-container' + (isActive ? ' active' : ' inactive')">
       <div *ngFor="let facet of results.disjunctiveFacets">
         <h3>{{ prettyNames[facet.name] }}</h3>
         <ul>

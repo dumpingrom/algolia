@@ -5,10 +5,10 @@ import { Component, Input, OnInit } from '@angular/core';
     template: `
     <div class="app-rating-container">
       <span class="app-rating-bottom">
-        <img src="/assets/images/stars-empty.png" *ngFor="let i of [0,1,2,3,4]" height="18">
+        <img src="https://rombevillard.github.io/algolia/assets/images/stars-empty.png" *ngFor="let i of [0,1,2,3,4]" height="18">
       </span>
       <span class="app-rating-top" [ngStyle]="{'width': parsedScore+'%'}">
-        <img src="/assets/images/stars-plain.png" *ngFor="let i of [0,1,2,3,4]" height="18">
+        <img src="https://rombevillard.github.io/algolia/assets/images/stars-plain.png" *ngFor="let i of [0,1,2,3,4]" height="18">
       </span>
     </div>
     `,

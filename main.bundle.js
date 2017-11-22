@@ -139,7 +139,7 @@ var RatingComponent = (function () {
     RatingComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'app-rating',
-            template: "\n    <div class=\"app-rating-container\">\n      <span class=\"app-rating-bottom\">\n        <img src=\"/assets/images/stars-empty.png\" *ngFor=\"let i of [0,1,2,3,4]\" height=\"18\">\n      </span>\n      <span class=\"app-rating-top\" [ngStyle]=\"{'width': parsedScore+'%'}\">\n        <img src=\"/assets/images/stars-plain.png\" *ngFor=\"let i of [0,1,2,3,4]\" height=\"18\">\n      </span>\n    </div>\n    ",
+            template: "\n    <div class=\"app-rating-container\">\n      <span class=\"app-rating-bottom\">\n        <img src=\"https://rombevillard.github.io/algolia/assets/images/stars-empty.png\" *ngFor=\"let i of [0,1,2,3,4]\" height=\"18\">\n      </span>\n      <span class=\"app-rating-top\" [ngStyle]=\"{'width': parsedScore+'%'}\">\n        <img src=\"https://rombevillard.github.io/algolia/assets/images/stars-plain.png\" *ngFor=\"let i of [0,1,2,3,4]\" height=\"18\">\n      </span>\n    </div>\n    ",
             styles: [
                 ".app-rating-bottom, .app-rating-top {\n        position: absolute;\n        top: 0; left: 0;\n      }\n      ",
                 ".app-rating-container {\n        position : relative;\n        top: 2px;\n        width: 90px;\n        height: 18px;\n        display: inline-block;\n      }\n      ",

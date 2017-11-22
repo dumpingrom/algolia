@@ -171,7 +171,7 @@ var MapComponent = (function () {
                 title: hit.name
             });
             var infowindow = new google.maps.InfoWindow({
-                content: hit.name
+                content: "\n        <img src=\"" + hit.image_url + "\" width=\"50px\" height=\"50px\" style=\"float: left; display: inline-block\">\n        <div style=\"display: inline-block; padding: 5px;\">\n          <span><strong>" + hit.name + "</strong></span><br>\n          <span>" + hit.address + ", " + hit.city + ", " + hit.country + "</span><br><br>\n        </div>\n        <a href=\"" + hit.reserve_url + "\" target=\"_blank\" title=\"Find a table at " + hit.name + " (new window)\" style=\"clear: both; display: block;\">Find a table</a>\n        "
             });
             marker.addListener('click', function () {
                 infowindow.open(_this.map, marker);
